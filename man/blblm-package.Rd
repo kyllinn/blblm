@@ -4,11 +4,32 @@
 \name{blblm-package}
 \alias{blblm}
 \alias{blblm-package}
-\title{blblm: What the Package Does (Title Case)}
+\title{blblm: Bag of little bootstrap for linear regression}
+\arguments{
+\item{formula}{an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted.}
+
+\item{data}{data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model.}
+
+\item{file_list}{a character vector. file names that containing data.}
+
+\item{path}{character. the path of the file list.}
+
+\item{m}{the number of subsamples.}
+
+\item{B}{the repeat time of bootstrapping for each subsample.}
+
+\item{parallel}{logical. If TRUE the function will use parallelization.}
+
+\item{num_cl}{numeric. The number of clusters to be created for parallelization.}
+
+\item{logit}{logical. If TRUE the function will do logistic regression.}
+}
+\value{
+an object of class "blblm"
+}
 \description{
-More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+R statistical functions for linear regression with little bag of bootstraps.
 }
 \details{
-Linear Regression with Little Bag of Bootstraps
+Bag of little bootstraps works by averaging the results of bootstrapping multiple subsets. BLB is well suited to modern parallel architectures.
 }

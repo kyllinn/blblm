@@ -1,18 +1,20 @@
 Package: blblm
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Bag of little bootstrap for linear regression
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Keyuan Lin
+Maintainer: Keyuan Lin <kynlin@ucdavis.edu>
+Description: R statistical functions for linear regression with little bag of bootstraps.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
     testthat (>= 2.1.0)
 Imports: 
     purrr,
-    magrittr
+    magrittr,
+    parallel,
+    stats,
+    readr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
