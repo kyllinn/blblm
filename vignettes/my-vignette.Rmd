@@ -44,8 +44,7 @@ data <- as.data.frame(cbind(x,y))
 names(data) <- c('x', 'y')
 
 # test parallelization
-library(blblm)
-fit <- blblm::blblm(y ~ x, data = data, m = 6, B = 100, parallel = TRUE, num_cl = 4)
+fit <- blblm(y ~ x, data = data, m = 6, B = 100, parallel = TRUE, num_cl = 2)
 coef(fit)
 ```
 
@@ -53,7 +52,7 @@ coef(fit)
 library(bench)
 bench::mark(
   class(coef(blblm(y ~ x, data = data, m = 6, B = 100))),
-  class(coef(blblm(y ~ x, data = data, m = 6, B = 100, parallel = TRUE, num_cl = 4))),
+  class(coef(blblm(y ~ x, data = data, m = 6, B = 100, parallel = TRUE, num_cl = 2))),
   filter_gc = FALSE
 )
 ```
@@ -84,7 +83,7 @@ files <- 1:10 %>% sprintf("file%02d.csv", .)
 
 ```{r}
 set.seed(10)
-fit <- blblm(y~x, data = data, logit = FALSE, file_list = files, path = '/Users/administrator/Desktop/141C project/files/', m = 6, B = 100, parallel = TRUE, num_cl = 4)
+fit <- blblm(y~x, data = data, logit = FALSE, file_list = files, path = '/Users/administrator/Desktop/141C project/files/', m = 6, B = 100, parallel = TRUE, num_cl = 2)
 coef(fit)
 ```
 
@@ -105,7 +104,7 @@ set.seed(10)
 fit <- glm(y ~ x, data = data, family = binomial)
 coef(fit)
 
-fit <- blblm(y ~ x, data = data, logit = TRUE, m = 6, B = 100, parallel = TRUE, num_cl = 4)
+fit <- blblm(y ~ x, data = data, logit = TRUE, m = 6, B = 100)
 coef(fit)
 ```
 We can see the results of `glm(family = binomial)` and `blblm(logit = TRUE)` are similar.
