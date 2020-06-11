@@ -1,0 +1,116 @@
+---
+title: "my-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(blblm)
+```
+
+I improved the `blblm` package in four ways:
+
+1. allow users to use parallelization.
+
+2. allow users to load files in the workers.
+
+3. allow users to do logistic regression.
+
+4. write tests and documentations
+
+
+# Parallelization
+
+I add two parameters `parallel` and `num_cl` for `blblm()` so that users can decide if they want to use parallelization and the number of workers.
+
+`parallel`: logical. If TRUE the function will use parallelization.
+`num_cl`: numeric. The number of clusters to be created for parallelization.
+
+```{r}
+# simulate data
+x <- rnorm(100000)
+y <- rnorm(100000)
+data <- as.data.frame(cbind(x,y))
+names(data) <- c('x', 'y')
+
+# test parallelization
+library(blblm)
+fit <- blblm::blblm(y ~ x, data = data, m = 6, B = 100, parallel = TRUE, num_cl = 4)
+coef(fit)
+```
+
+```{r}
+library(bench)
+bench::mark(
+  class(coef(blblm(y ~ x, data = data, m = 6, B = 100))),
+  class(coef(blblm(y ~ x, data = data, m = 6, B = 100, parallel = TRUE, num_cl = 4))),
+  filter_gc = FALSE
+)
+```
+
+We can see using blblm with parallelization is faster than blblm without parallelization
+
+# Load files in the workers
+
+I add two parameters `file_list` and `path` for `blblm()` so that users could specify a list of file of datasets rather than loading the whole dataset in the main process then distribute to the workers. Each file would be then loaded in the workers to minimize memory usage.
+
+`file_list`: a character vector. file names that containing data.
+`path`: character. the path of the file list.
+
+```{r}
+# simulate data and create files
+library(tidyverse)
+dir.create("files", showWarnings = FALSE)
+set.seed(141)
+1:100 %>% walk(function(i) {
+    dt <- tibble(x = rnorm(1000), y = rnorm(1000))
+    write_csv(dt, file.path("files", sprintf("file%02d.csv", i)))
+})
+
+files <- 1:100 %>% sprintf("file%02d.csv", .)
+```
+
+
+```{r}
+set.seed(10)
+fit <- blblm(y~x, data = data, logit = FALSE, file_list = files, path = '/Users/administrator/Desktop/141C project/files/', m = 6, B = 100, parallel = TRUE, num_cl = 4)
+coef(fit)
+```
+
+
+# Logistic regression
+
+I add a parameter `logit` for `blblm()` so that users can decide if they want to do logistic regression instead of linear regression.
+
+```{r}
+x <- rnorm(100000)
+y <- as.integer(rnorm(100000)>1)
+data <- as.data.frame(cbind(x,y))
+names(data) <- c('x', 'y')
+```
+
+```{r}
+set.seed(10)
+fit <- glm(y ~ x, data = data, family = binomial)
+coef(fit)
+
+fit <- blblm(y ~ x, data = data, logit = TRUE, m = 6, B = 100, parallel = TRUE, num_cl = 4)
+coef(fit)
+```
+We can see the results of `glm(family = binomial)` and `blblm(logit = TRUE)` are similar.
+
+
+# Tests and documentations
+
+I wrote tests to check the whether each function returns correct format. I also write documentations for the package to make it easy to understand.
+
